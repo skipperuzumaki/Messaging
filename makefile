@@ -13,4 +13,7 @@ migrateup:
 migratedown:
 	migrate -path db/migrations -database "postgresql://root@localhost:5432/messaging_app?sslmode=disable;password=secret" -verbose down
 
-.PHONY: postgres createdb dropdb migrateup
+sqlc:
+	docker run --rm -v $$(pwd):/src -w /src kjconroy/sqlc generate
+
+.PHONY: postgres createdb dropdb migrateup sqlc
