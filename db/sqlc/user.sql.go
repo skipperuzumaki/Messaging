@@ -7,6 +7,21 @@ import (
 	"context"
 )
 
+const createUser = `-- name: CreateUser :one
+INSERT INTO "users"(
+    username
+) VALUES (
+    $1
+) RETURNING id, username, created_at
+`
+
+func (q *Queries) CreateUser(ctx context.Context, username string) (Users, error) {
+	row := q.db.QueryRowContext(ctx, createUser, username)
+	var i Users
+	err := row.Scan(&i.ID, &i.Username, &i.CreatedAt)
+	return i, err
+}
+
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM "users" WHERE id = $1
 `
@@ -77,21 +92,6 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Users, error) {
 	row := q.db.QueryRowContext(ctx, updateUser, arg.ID, arg.Username)
-	var i Users
-	err := row.Scan(&i.ID, &i.Username, &i.CreatedAt)
-	return i, err
-}
-
-const createUser = `-- name: createUser :one
-INSERT INTO "users"(
-    username
-) VALUES (
-    $1
-) RETURNING id, username, created_at
-`
-
-func (q *Queries) createUser(ctx context.Context, username string) (Users, error) {
-	row := q.db.QueryRowContext(ctx, createUser, username)
 	var i Users
 	err := row.Scan(&i.ID, &i.Username, &i.CreatedAt)
 	return i, err

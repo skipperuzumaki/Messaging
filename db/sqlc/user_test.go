@@ -11,7 +11,7 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	username := util.RandomString(6)
-	acc, err := testQueries.createUser(context.Background(), username)
+	acc, err := testQueries.CreateUser(context.Background(), username)
 	require.NoError(t, err)
 	require.NotEmpty(t, acc)
 	require.Equal(t, username, acc.Username)
@@ -21,7 +21,7 @@ func TestCreateUser(t *testing.T) {
 
 func CreateRandomUser() (Users, error) {
 	username := util.RandomString(6)
-	return testQueries.createUser(context.Background(), username)
+	return testQueries.CreateUser(context.Background(), username)
 }
 
 func TestGetUser(t *testing.T) {
