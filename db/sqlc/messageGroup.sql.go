@@ -7,6 +7,36 @@ import (
 	"context"
 )
 
+const createMessageGroup = `-- name: CreateMessageGroup :one
+INSERT INTO "messageGroup"(
+    "identifier",
+    "from_user",
+    "to_user"
+) VALUES (
+    $1,
+    $2,
+    $3
+) RETURNING id, identifier, from_user, to_user
+`
+
+type CreateMessageGroupParams struct {
+	Identifier string `json:"identifier"`
+	FromUser   int64  `json:"from_user"`
+	ToUser     int64  `json:"to_user"`
+}
+
+func (q *Queries) CreateMessageGroup(ctx context.Context, arg CreateMessageGroupParams) (MessageGroup, error) {
+	row := q.db.QueryRowContext(ctx, createMessageGroup, arg.Identifier, arg.FromUser, arg.ToUser)
+	var i MessageGroup
+	err := row.Scan(
+		&i.ID,
+		&i.Identifier,
+		&i.FromUser,
+		&i.ToUser,
+	)
+	return i, err
+}
+
 const deleteMessageGroup = `-- name: DeleteMessageGroup :exec
 DELETE FROM "messageGroup" WHERE "id" = $1
 `
@@ -82,34 +112,4 @@ func (q *Queries) ListGroups(ctx context.Context, fromUser int64) ([]MessageGrou
 		return nil, err
 	}
 	return items, nil
-}
-
-const createMessageGroup = `-- name: createMessageGroup :one
-INSERT INTO "messageGroup"(
-    "identifier",
-    "from_user",
-    "to_user"
-) VALUES (
-    $1,
-    $2,
-    $3
-) RETURNING id, identifier, from_user, to_user
-`
-
-type createMessageGroupParams struct {
-	Identifier string `json:"identifier"`
-	FromUser   int64  `json:"from_user"`
-	ToUser     int64  `json:"to_user"`
-}
-
-func (q *Queries) createMessageGroup(ctx context.Context, arg createMessageGroupParams) (MessageGroup, error) {
-	row := q.db.QueryRowContext(ctx, createMessageGroup, arg.Identifier, arg.FromUser, arg.ToUser)
-	var i MessageGroup
-	err := row.Scan(
-		&i.ID,
-		&i.Identifier,
-		&i.FromUser,
-		&i.ToUser,
-	)
-	return i, err
 }

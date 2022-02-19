@@ -1,4 +1,4 @@
--- name: createMessageGroup :one
+-- name: CreateMessageGroup :one
 INSERT INTO "messageGroup"(
     "identifier",
     "from_user",
