@@ -1,4 +1,4 @@
-ame: Run unit tests
+name: Test
 
 on:
   push:
