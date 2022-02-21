@@ -1,8 +1,6 @@
 package api
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,8 +17,26 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	fmt.Println(param)
-	usr, err := server.query.CreateUser(context.Background(), param.Username)
+	usr, err := server.query.CreateUser(ctx, param.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, usr)
+}
+
+type getUserParam struct {
+	Id int64 `uri:"id", binding:"required"`
+}
+
+func (server *Server) getUser(ctx *gin.Context) {
+	var param getUserParam
+	err := ctx.ShouldBindUri(&param)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	usr, err := server.query.GetUser(ctx, param.Id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
