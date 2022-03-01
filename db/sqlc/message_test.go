@@ -21,13 +21,13 @@ func TestCreateMessage(t *testing.T) {
 	}
 	require.NotEmpty(t, mg)
 	message := util.RandomString(15)
-	params := createMessageParams{
+	params := CreateMessageParams{
 		Group:    identifier,
 		Message:  message,
 		SentFrom: acc1.ID,
 		SentTo:   acc2.ID,
 	}
-	msg, err := testQueries.createMessage(context.Background(), params)
+	msg, err := testQueries.CreateMessage(context.Background(), params)
 	require.NoError(t, err)
 	require.NotEmpty(t, msg)
 	require.Equal(t, msg.Group, identifier)
@@ -50,13 +50,13 @@ func createRandomMessage() (Message, error) {
 
 	}
 	message := util.RandomString(15)
-	params := createMessageParams{
+	params := CreateMessageParams{
 		Group:    identifier,
 		Message:  message,
 		SentFrom: acc1.ID,
 		SentTo:   acc2.ID,
 	}
-	msg, err := testQueries.createMessage(context.Background(), params)
+	msg, err := testQueries.CreateMessage(context.Background(), params)
 	return msg, err
 }
 
@@ -71,13 +71,13 @@ func TestRetrieveAllMessages(t *testing.T) {
 
 	}
 	for i := 0; i < 10; i++ {
-		params := createMessageParams{
+		params := CreateMessageParams{
 			Group:    identifier,
 			Message:  util.RandomString(15),
 			SentFrom: acc1.ID,
 			SentTo:   acc2.ID,
 		}
-		_, err := testQueries.createMessage(context.Background(), params)
+		_, err := testQueries.CreateMessage(context.Background(), params)
 		require.NoError(t, err)
 	}
 	arg := RetrieveAllParams{

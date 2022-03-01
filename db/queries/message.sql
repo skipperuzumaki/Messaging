@@ -1,4 +1,4 @@
--- name: createMessage :one
+-- name: CreateMessage :one
 INSERT INTO "message"(
     "group",
     "message",

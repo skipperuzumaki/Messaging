@@ -7,6 +7,47 @@ import (
 	"context"
 )
 
+const createMessage = `-- name: CreateMessage :one
+INSERT INTO "message"(
+    "group",
+    "message",
+    "sent_from",
+    "sent_to"
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+) RETURNING id, "group", message, sent_at, read, sent_from, sent_to
+`
+
+type CreateMessageParams struct {
+	Group    string `json:"group"`
+	Message  string `json:"message"`
+	SentFrom int64  `json:"sent_from"`
+	SentTo   int64  `json:"sent_to"`
+}
+
+func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (Message, error) {
+	row := q.db.QueryRowContext(ctx, createMessage,
+		arg.Group,
+		arg.Message,
+		arg.SentFrom,
+		arg.SentTo,
+	)
+	var i Message
+	err := row.Scan(
+		&i.ID,
+		&i.Group,
+		&i.Message,
+		&i.SentAt,
+		&i.Read,
+		&i.SentFrom,
+		&i.SentTo,
+	)
+	return i, err
+}
+
 const getLatestUnreadMessage = `-- name: GetLatestUnreadMessage :one
 SELECT id, "group", message, sent_at, read, sent_from, sent_to FROM "message"
 WHERE "sent_to" = $1 AND "read" = FALSE
@@ -83,45 +124,4 @@ func (q *Queries) RetrieveAll(ctx context.Context, arg RetrieveAllParams) ([]Mes
 		return nil, err
 	}
 	return items, nil
-}
-
-const createMessage = `-- name: createMessage :one
-INSERT INTO "message"(
-    "group",
-    "message",
-    "sent_from",
-    "sent_to"
-) VALUES (
-    $1,
-    $2,
-    $3,
-    $4
-) RETURNING id, "group", message, sent_at, read, sent_from, sent_to
-`
-
-type createMessageParams struct {
-	Group    string `json:"group"`
-	Message  string `json:"message"`
-	SentFrom int64  `json:"sent_from"`
-	SentTo   int64  `json:"sent_to"`
-}
-
-func (q *Queries) createMessage(ctx context.Context, arg createMessageParams) (Message, error) {
-	row := q.db.QueryRowContext(ctx, createMessage,
-		arg.Group,
-		arg.Message,
-		arg.SentFrom,
-		arg.SentTo,
-	)
-	var i Message
-	err := row.Scan(
-		&i.ID,
-		&i.Group,
-		&i.Message,
-		&i.SentAt,
-		&i.Read,
-		&i.SentFrom,
-		&i.SentTo,
-	)
-	return i, err
 }

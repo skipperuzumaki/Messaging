@@ -27,6 +27,11 @@ func NewServer(qry *db.Queries) *Server {
 	router.DELETE("/messageGroup/:id", server.deleteMessageGroup)
 	router.GET("messageGroup/all/:usr", server.listMessageGroup)
 
+	router.POST("/message", server.createMessage)
+	router.GET("/message/latest", server.getLatestUnreadMessage)
+	router.PUT("/message/:grp", server.readMessageGroup)
+	router.GET("message/all/", server.listMessage)
+
 	server.router = router
 	return server
 }
